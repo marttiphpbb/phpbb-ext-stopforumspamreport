@@ -1,0 +1,22 @@
+services:
+    marttiphpbb.stopforumspamreport.listener:
+        class: marttiphpbb\stopforumspamreport\event\listener
+        arguments:
+            - @auth
+            - @cache
+            - @config
+            - @controller.helper
+            - @log
+            - @request
+            - @template
+            - @user
+        tags:
+            - { name: event.listener }
+    marttiphpbb.stopforumspamreport.controller:
+        class: marttiphpbb\stopforumspamreport\controller\main
+        arguments:
+            - @auth
+            - @cache
+            - @config
+            - @log
+            - @user

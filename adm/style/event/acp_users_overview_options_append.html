@@ -1,0 +1,10 @@
+<!-- --IF STOPFORUMSPAMREPORT_EN -->
+<dl id="stopforumspamreport_dl" >
+	<dt><label for="stopforumspamreport">{L_ACP_STOPFORUMSPAMREPORT_REPORT}</label><br>
+	<!-- IF not STOPFORUMSPAMREPORT_EN --><p>{L_ACP_STOPFORUMSPAMREPORT_REPORT_EXPLAIN}</p><!-- ENDIF -->
+	</dt>
+	<dd><input type="radio" class="radio" name="stopforumspamreport" value="1" <!-- IF not STOPFORUMSPAMREPORT_EN -->disabled="disabled"<!-- ENDIF -->> {L_YES} &nbsp;
+	<input type="radio" class="radio" name="stopforumspamreport" value="0" checked="checked" <!-- IF not STOPFORUMSPAMREPORT_EN -->disabled="disabled"<!-- ENDIF -->> {L_NO}</dd>
+</dl>
+<!-- INCLUDEJS @marttiphpbb_stopforumspamreport/stopforumspamreport.js -->
+<!-- --ENDIF -->

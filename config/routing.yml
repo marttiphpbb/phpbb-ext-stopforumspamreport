@@ -1,0 +1,7 @@
+marttiphpbb_stopforumspamreport_controller:
+    pattern: /stopforumspamreport/{user_id}/{token}
+    defaults: { _controller: marttiphpbb.stopforumspamreport.controller:report }
+    requirements:
+        _method: GET
+        token: ^[0-9a-f]{40}$
+        user_id: \d+

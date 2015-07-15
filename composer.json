@@ -1,0 +1,33 @@
+{
+	"name": "marttiphpbb/stopforumspamreport",
+	"type": "phpbb-extension",
+	"description": "StopForumSpam Report Extension for phpBB 3.1",
+	"homepage": "https://github.com/marttiphpbb/phpbb-ext-stopforumspamreport",
+	"version": "0.1.0",
+	"time": "2015-07-11",
+	"keywords": ["phpbb", "extension", "stopforumspam", "report"],
+	"license": "GPL-2.0",
+	"authors": [{
+			"name": "martti",
+			"email": "info@martti.be",
+			"homepage": "https://github.com/marttiphpbb/",
+			"role": "Developer"
+		}],
+	"require": {
+		"php": ">=5.3.3"
+	},
+	"require-dev": {
+		"phpbb/epv": "dev-master"
+	},
+	"extra": {
+		"display-name": "StopForumSpam Report",
+		"soft-require": {
+			"phpbb/phpbb": ">=3.1.0,<3.2.*@dev"
+		},
+		"version-check": {
+			"host": "marttiphpbb.github.io",
+			"directory": "/version",
+			"filename": "stopforumspamreport.json"
+		}
+	}
+}
