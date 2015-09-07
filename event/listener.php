@@ -177,31 +177,37 @@ class listener implements EventSubscriberInterface
 			return;
 		}
 
-		$url = $this->helper->route('marttiphpbb_stopforumspamreport_controller', array(
-			'user_id' 	=> $user_id,
-			'token'		=> $cached['token'],
-		), false, false, true);
+		$username_enc = urlencode($username);
+		$email_enc = urlencode($email);
 
-		error_log($user_id . '/' . $cached['token'] . ' ' . $url);
+		$url = 'http://stopforumspam.com/add?ip_addr=' . $ip;
+		$url .= '&username=' . $username_enc;
+		$url .= '&email=' . $email_enc;
+		$url .= '&api_key=' . $apikey;
 
-        $parts = parse_url($url);
-		$port = (isset($parts['scheme']) && $parts['scheme'] == 'https')? 443 : 80;
-		$port = ($parts['port'] == 80) ? $port : $parts['port'];
-		$errno = null;
-		$errstr = null;
-		$fp = fsockopen($parts['host'], $port, $errno, $errstr, 30);
-		$out = 'GET ' . $parts['path'] . (isset($parts['query']) ? '?' . $parts['query'] : '') . " HTTP/1.1\r\n";
-		$out .= 'Host: ' . $parts['host']."\r\n";
-		$out .= "Content-Type: text/plain\r\n";
-		$out .= "Content-Length: 0\r\n";
-		$out .= "Connection: Close\r\n\r\n";
-		fwrite($fp, $out);
-		fclose($fp);
-
-/*
 		$params = array($ip, $username, $email);
+
+		$curl = curl_init();
+		curl_setopt_array($curl, array(
+			CURLOPT_RETURNTRANSFER => 1,
+			CURLOPT_URL => $url,
+			CURLOPT_USERAGENT => 'phpBB',
+			CURLOPT_TIMEOUT => 8,
+		));
+		$body = curl_exec($curl);
+		$info = curl_getinfo($curl);
+		curl_close($curl);
+
+		if ($info['http_code'] != 200)
+		{
+			$params[] = $body;
+			$this->log->add('admin', $this->user->data['user_id'],
+				$this->user->ip, 'LOG_STOPFORUMSPAMREPORT_FAIL', time(), $params);
+			return;
+		} 
+
 		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STOPFORUMSPAMREPORT', time(), $params);
-*/
+
 		return;
 	}
 }

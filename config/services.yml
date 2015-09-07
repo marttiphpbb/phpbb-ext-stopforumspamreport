@@ -12,11 +12,3 @@ services:
             - @user
         tags:
             - { name: event.listener }
-    marttiphpbb.stopforumspamreport.controller:
-        class: marttiphpbb\stopforumspamreport\controller\main
-        arguments:
-            - @auth
-            - @cache
-            - @config
-            - @log
-            - @user
