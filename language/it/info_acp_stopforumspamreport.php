@@ -36,5 +36,5 @@ $lang = array_merge($lang, array(
 	'ACP_STOPFORUMSPAMREPORT'			=> 'Segnalazione a StopForumSpam',
 	'ACP_STOPFORUMSPAMREPORT_APIKEY'	=> 'Chiave API',
 	'LOG_STOPFORUMSPAMREPORT'			=> '<strong>Segnalato a stopforumspam.com</strong><br />IP: %1$s<br />Nome utente: %2$s<br />E-mail: %3$s',
-	'LOG_STOPFORUMSPAMREPORT_FAIL'		=> '<strong>Impossibile segnalare a stopforumspam.com</strong><br />IP: %1$s<br />Nome utente: %2$s<br />E-mail: %3$s<br>Messaggio: %4$s',
+	'LOG_STOPFORUMSPAMREPORT_FAIL'		=> '<strong>Impossibile segnalare a stopforumspam.com</strong><br />IP: %1$s<br />Nome utente: %2$s<br />E-mail: %3$s<br />Messaggio: %4$s',
 ));
