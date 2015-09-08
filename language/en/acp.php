@@ -37,5 +37,9 @@ $lang = array_merge($lang, array(
 	'ACP_STOPFORUMSPAMREPORT_APIKEY_EXPLAIN'	=> 'The apikey from stopforumspam.com',
 	'ACP_STOPFORUMSPAMREPORT_APIKEY_SAVED'		=> 'The apikey was succesfully stored.',
 	'ACP_STOPFORUMSPAMREPORT_REPORT'			=> 'Report user to stopforumspam.com',
-	'ACP_STOPFORUMSPAMREPORT_REPORT_EXPLAIN'	=> 'An apikey obtained from <a href="https://stopforumspam.com">stopforumspam.com</a> is needed for this feature.',
+	'ACP_STOPFORUMSPAMREPORT_REPORT_EXPLAIN'	=> 'Be sure to have understood the %1$sTerms of Service of service of stopforumspam.com%2$s before reporting a user.
+		In order to report, the spambot has to have posted a least one obvious spammessage in the board.
+		Only spambots with validated email address can be reported. %3$s	
+		An apikey obtained from %4$sstopforumspam.com%5$s is needed for reporting.',
+	'ACP_STOPFORUMSPAMREPORT_EMAIL_NOT_VALIDATED'	=> '<strong>The email address of this user is not validated.</strong>',
 ));

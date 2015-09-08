@@ -90,8 +90,17 @@ class listener implements EventSubscriberInterface
 
 	public function core_acp_users_overview_before($event)
 	{
-		$this->user->add_lang_ext('marttiphpbb/stopforumspamreport', 'acp');
+		$user_row = $event['user_row'];
+		$user_id = $user_row['user_id'];
 
+		$this->user->add_lang_ext('marttiphpbb/stopforumspamreport', 'acp');
+		$no_validated_email = ($user_row['user_stopforumspamreport_email_validated']) ? '' : $this->user->lang('ACP_STOPFORUMSPAMREPORT_EMAIL_NOT_VALIDATED');
+		$this->template->assign_var('ACP_STOPFORUMSPAMREPORT_REPORT_EXPLAIN',
+			sprintf($this->user->lang['ACP_STOPFORUMSPAMREPORT_REPORT_EXPLAIN'],
+			'<a href="https://stopforumspam.com/legal">', '</a>',
+			$no_validated_email,
+			'<a href="https://stopforumspam.com">', '</a>'));
+ 
 		$delete			= $this->request->variable('delete', 0);
 		$delete_type	= $this->request->variable('delete_type', '');
 		$apikey = $this->config['stopforumspamreport_apikey'];
@@ -107,9 +116,6 @@ class listener implements EventSubscriberInterface
 		{
 			return;
 		}
-
-		$user_row = $event['user_row'];
-		$user_id = $user_row['user_id'];
 
 		if ($user_id == ANONYMOUS
 			|| $user_row['user_type'] == USER_FOUNDER
