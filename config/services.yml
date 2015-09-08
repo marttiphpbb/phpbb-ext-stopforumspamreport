@@ -5,7 +5,7 @@ services:
             - @auth
             - @cache
             - @config
-            - @controller.helper
+            - @dbal.conn
             - @log
             - @request
             - @template

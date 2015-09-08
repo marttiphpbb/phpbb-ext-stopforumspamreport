@@ -10,7 +10,7 @@ namespace marttiphpbb\stopforumspamreport\event;
 use phpbb\auth\auth;
 use phpbb\cache\service as cache;
 use phpbb\config\config;
-use phpbb\controller\helper;
+use phpbb\db\driver\factory as db;
 use phpbb\log\log;
 use phpbb\request\request;
 use phpbb\template\twig\twig as template;
@@ -35,8 +35,8 @@ class listener implements EventSubscriberInterface
 	/* @var config */
 	protected $config;
 
-	/* @var helper */
-	protected $helper;
+	/* @var db */
+	protected $db;
 
 	/* @var log */
 	protected $log;
@@ -54,7 +54,7 @@ class listener implements EventSubscriberInterface
 	 * @param auth $auth
 	 * @param cache $cache
 	 * @param config $config
-	 * @param helper $helper
+	 * @param db $db
 	 * @param log $log
 	 * @param request $request
 	 * @param template $template
@@ -64,7 +64,7 @@ class listener implements EventSubscriberInterface
 		auth $auth,
 		cache $cache,
 		config $config,
-		helper $helper,
+		db $db,
 		log $log,
 		request $request,
 		template $template,
@@ -74,7 +74,7 @@ class listener implements EventSubscriberInterface
 		$this->auth = $auth;
 		$this->cache = $cache;
 		$this->config = $config;
-		$this->helper = $helper;
+		$this->db = $db;
 		$this->log = $log;
 		$this->request = $request;
 		$this->template = $template;
@@ -85,21 +85,27 @@ class listener implements EventSubscriberInterface
 	{
 		return array(
 			'core.acp_users_overview_before'		=> 'core_acp_users_overview_before',
+			'core.user_active_flip_after'			=> 'core_user_active_flip_after',
 		);
 	}
 
+	/*
+	 *
+	 */
 	public function core_acp_users_overview_before($event)
 	{
 		$user_row = $event['user_row'];
 		$user_id = $user_row['user_id'];
 
+		$email_validated = ($user_row['user_sfsr_email_validated']) ? true : false;
+
 		$this->user->add_lang_ext('marttiphpbb/stopforumspamreport', 'acp');
-		$no_validated_email = ($user_row['user_stopforumspamreport_email_validated']) ? '' : $this->user->lang('ACP_STOPFORUMSPAMREPORT_EMAIL_NOT_VALIDATED');
-		$this->template->assign_var('ACP_STOPFORUMSPAMREPORT_REPORT_EXPLAIN',
-			sprintf($this->user->lang['ACP_STOPFORUMSPAMREPORT_REPORT_EXPLAIN'],
-			'<a href="https://stopforumspam.com/legal">', '</a>',
-			$no_validated_email,
-			'<a href="https://stopforumspam.com">', '</a>'));
+		$no_validated_email = ($email_validated) ? '' : $this->user->lang('ACP_STOPFORUMSPAMREPORT_EMAIL_NOT_VALIDATED');
+		$this->template->assign_vars(array(
+			'ACP_STOPFORUMSPAMREPORT_REPORT_EXPLAIN'	=> sprintf($this->user->lang['ACP_STOPFORUMSPAMREPORT_REPORT_EXPLAIN'],
+					'<a href="https://stopforumspam.com/legal">', '</a>', $no_validated_email, '<a href="https://stopforumspam.com">', '</a>'),
+			'S_STOPFORUMSPAMREPORT_EN'	=> ($email_validated && $this->config['stopforumspamreport_apikey']) ? true : false,
+		));
  
 		$delete			= $this->request->variable('delete', 0);
 		$delete_type	= $this->request->variable('delete_type', '');
@@ -133,14 +139,12 @@ class listener implements EventSubscriberInterface
 
 		if (!$confirm)
 		{
-			if ($this->request->variable('stopforumspamreport', 0) && $apikey)
+			if ($this->request->variable('stopforumspamreport', 0) && $apikey && $email_validated)
 			{
-				$token = sha1(time() . $user_id . $this->user->data['user_password']);
 				$data = array(
 					'username' 	=> $username,
 					'ip'		=> $ip,
 					'email'		=> $email,
-					'token'		=> $token,
 				);
 				$this->cache->put('stopforumspamreport_' . $user_id, serialize($data), 900);
 			}
@@ -176,7 +180,6 @@ class listener implements EventSubscriberInterface
 			|| $cached['ip'] != $ip
 			|| $cached['username'] != $username
 			|| $cached['email'] != $email
-			|| !$cached['token']
 		)
 		{
 			$this->cache->destroy('stopforumspamreport_' . $user_id);
@@ -215,5 +218,38 @@ class listener implements EventSubscriberInterface
 		$this->log->add('admin', $this->user->data['user_id'], $this->user->ip, 'LOG_STOPFORUMSPAMREPORT', time(), $params);
 
 		return;
+	}
+
+	/*
+	 *
+	 */
+	public function core_user_active_flip_after($event)
+	{
+		$mode = $event['mode'];
+		$activated = $event['activated'];
+		$reason = $event['reason'];
+		$user_id_ary = $event['user_id_ary'];
+		$user_id = $user_id_ary[0];
+		
+		$actkey = $this->request->variable('k', '');
+		$uid = $this->request->variable('u', 0);
+
+		if ($mode != 'activate'
+			|| $activated != 1
+			|| $reason != INACTIVE_MANUAL
+			|| sizeof($user_id_ary) != 1
+			|| !$user_id
+			|| !$uid
+			|| $user_id != $uid
+			|| !$actkey)
+		{
+			return;
+		}
+
+		$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_sfsr_email_validated = 1 
+				WHERE user_id = ' . $user_id . '
+					AND user_actkey = ' . $actkey;
+		$db->sql_query($sql);
 	}
 }
