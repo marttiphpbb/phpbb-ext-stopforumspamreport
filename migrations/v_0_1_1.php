@@ -14,7 +14,7 @@ class v_0_1_1 extends \phpbb\db\migration\migration
 		return array(
 			'add_columns'        => array(
 				$this->table_prefix . 'users'        => array(
-					'user_sfsr_email_validated'  => array('BOOL', false),
+					'user_sfsr_email_validated'  => array('BOOL', 0),
 				),
 			),
 		);
