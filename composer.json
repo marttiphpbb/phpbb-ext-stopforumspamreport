@@ -3,7 +3,7 @@
 	"type": "phpbb-extension",
 	"description": "StopForumSpam Report Extension for phpBB 3.1",
 	"homepage": "https://github.com/marttiphpbb/phpbb-ext-stopforumspamreport",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"time": "2015-07-11",
 	"keywords": ["phpbb", "extension", "stopforumspam", "report"],
 	"license": "GPL-2.0",
